@@ -1,4 +1,6 @@
 import axios, { type AxiosResponse } from 'axios';
+import http from 'node:http';
+import https from 'node:https';
 import type { RequestOptions } from '../types/index.js';
 
 /**
@@ -20,7 +22,7 @@ const DEFAULT_HEADERS: Record<string, string> = {
   Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   'Accept-Language': 'en-US,en;q=0.9',
   'Accept-Encoding': 'gzip, deflate, br',
-  Connection: 'keep-alive',
+  Connection: 'close',
   'Upgrade-Insecure-Requests': '1',
 };
 
@@ -56,6 +58,8 @@ export class HttpClient {
       transformResponse: [(data) => data], // Keep as text
       maxRedirects: 5,
       validateStatus: (status) => status < 500,
+      httpAgent: new http.Agent({ keepAlive: false }),
+      httpsAgent: new https.Agent({ keepAlive: false }),
     });
 
     // Extract cookies from response
@@ -109,6 +113,8 @@ export class HttpClient {
       transformResponse: [(data) => data], // Keep as text
       maxRedirects: 5,
       validateStatus: (status) => status < 500,
+      httpAgent: new http.Agent({ keepAlive: false }),
+      httpsAgent: new https.Agent({ keepAlive: false }),
     });
 
     return {

@@ -29,7 +29,9 @@ export class ContentExtractor {
     content: string;
     wordCount: number;
   } {
+    const startTime = performance.now();
     const $ = cheerio.load(html);
+    const parseTime = performance.now() - startTime;
 
     // Extract title (Python: soup.find("title"))
     let title = '';
@@ -39,10 +41,12 @@ export class ContentExtractor {
     }
 
     // Remove unwanted elements (Python: script.decompose() for these)
+    const removeStart = performance.now();
     $('script, style, nav, header, footer, aside, iframe, noscript').remove();
+    const removeTime = performance.now() - removeStart;
 
-    // Find main content with priority order
-    // Python: soup.find("main") or soup.find("article") or soup.find("div", class_=re.compile(r"content|article|post|main")) or soup.body
+    // Find main content with priority order - optimized with direct selectors
+    const findStart = performance.now();
     let mainContent = $('main').first();
 
     if (mainContent.length === 0) {
@@ -50,22 +54,19 @@ export class ContentExtractor {
     }
 
     if (mainContent.length === 0) {
-      // Match regex pattern /(content|article|post|main)/i
-      $('div, section').each((_, elem) => {
-        const className = $(elem).attr('class') || '';
-        if (/content|article|post|main/i.test(className)) {
-          mainContent = $(elem);
-          return false; // Break
-        }
-      });
+      // Optimized: use attribute selector instead of iterating all elements
+      mainContent = $('div[class*="content"], div[class*="article"], div[class*="post"], div[class*="main"], section[class*="content"], section[class*="article"], section[class*="post"], section[class*="main"]').first();
     }
 
     if (mainContent.length === 0) {
       mainContent = $('body');
     }
+    const findTime = performance.now() - findStart;
 
     // Convert to markdown
+    const convertStart = performance.now();
     const markdown = markdownConverter.convert(mainContent.html() || '');
+    const convertTime = performance.now() - convertStart;
 
     // Clean up excessive whitespace (Python: re.sub(r"\n+", "\n", text))
     const cleanedContent = markdown.replace(/\n{3,}/g, '\n\n').trim();
@@ -78,6 +79,13 @@ export class ContentExtractor {
 
     // Calculate word count
     const wordCount = finalContent.split(/\s+/).filter((w) => w.length > 0).length;
+
+    const totalTime = performance.now() - startTime;
+
+    // Log timing diagnostics to stderr (won't interfere with stdout output)
+    if (process.env.DEBUG_TIMING === 'true') {
+      console.error(`[Timing] Parse: ${parseTime.toFixed(1)}ms, Remove: ${removeTime.toFixed(1)}ms, Find: ${findTime.toFixed(1)}ms, Convert: ${convertTime.toFixed(1)}ms, Total: ${totalTime.toFixed(1)}ms`);
+    }
 
     return {
       title,

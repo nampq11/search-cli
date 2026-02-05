@@ -52,12 +52,16 @@ For AI Agents:
         process.exit(1);
       }
 
+      // Show progress indicator
+      console.error('⏳ Fetching URL...');
       const content = await webFetch(url, {
         timeout,
         maxLength,
       });
+      console.error('✓ Fetch complete, processing content...');
 
       console.log(formatFetchedContent(content));
+      process.exit(0);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       console.log(formatError(message));
