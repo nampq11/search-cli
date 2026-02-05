@@ -50,6 +50,7 @@ For AI Agents:
       });
 
       console.log(formatSearchResults(response));
+      process.exit(0);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       console.log(formatError(message));
