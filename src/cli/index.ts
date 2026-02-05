@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { createRequire } from 'node:module';
 import { fetchCommand } from './commands/fetch.js';
 import { searchCommand } from './commands/search.js';
+
+const require = createRequire(import.meta.url);
+const pkg = require('../../package.json');
 
 const program = new Command();
 
 program
   .name('search-cli')
   .description('A modern CLI tool for web search and content fetching powered by DuckDuckGo.')
-  .version('1.0.0')
+  .version(pkg.version)
   .addHelpCommand(true)
   .addHelpText(
     'after',
