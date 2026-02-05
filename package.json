@@ -1,11 +1,11 @@
 {
-  "name": "search-cli",
+  "name": "@nampham1106/search-cli",
   "version": "1.0.0",
   "description": "A modern TypeScript CLI tool for web search and content fetching powered by DuckDuckGo",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "search-cli": "./dist/cli/index.js"
+    "search-cli": "dist/cli/index.js"
   },
   "files": [
     "dist"

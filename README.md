@@ -13,7 +13,7 @@ A modern TypeScript CLI tool for web search and content fetching powered by Duck
 ## Installation
 
 ```bash
-npm install -g search-cli
+npm install -g @nampham1106/search-cli
 ```
 
 Or use with npx:
